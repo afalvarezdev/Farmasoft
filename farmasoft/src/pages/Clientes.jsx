@@ -1,26 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { obtenerClientes, eliminarCliente } from '../services/api';
+import ClienteModal from '../components/ClienteModal';
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
   const [cargando, setCargando] = useState(true);
-
-  // Estado del formulario
-  const [nuevoCliente, setNuevoCliente] = useState({
-    nombre_completo: '',
-    telefono: '',
-    direccion: ''
-  });
+  const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
 
   const cargarClientes = () => {
     setCargando(true);
-    fetch('http://localhost/farmasoft/backend/clientes/listar.php')
-      .then((res) => res.json())
+    obtenerClientes()
       .then((datos) => {
-        if (Array.isArray(datos)) setClientes(datos);
+        setClientes(Array.isArray(datos) ? datos : []);
         setCargando(false);
       })
-      .catch((err) => {
-        console.error("Error:", err);
+      .catch(() => {
+        setMensaje({ tipo: 'danger', texto: 'Error al conectar con el servidor' });
         setCargando(false);
       });
   };
@@ -29,89 +25,52 @@ const Clientes = () => {
     cargarClientes();
   }, []);
 
-  const handleChange = (e) => {
-    setNuevoCliente({
-      ...nuevoCliente,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!nuevoCliente.nombre_completo) return alert("Ingresa el nombre");
-
-    fetch('http://localhost/farmasoft/backend/clientes/crear.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(nuevoCliente)
-    })
-      .then((res) => res.json())
-      .then(() => {
-        setNuevoCliente({ nombre_completo: '', telefono: '', direccion: '' });
-        cargarClientes();
-      })
-      .catch((err) => console.error(err));
-  };
-
   const handleEliminar = (id) => {
     if (!window.confirm("¿Deseas eliminar este cliente?")) return;
 
-    fetch('http://localhost/farmasoft/backend/clientes/eliminar.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id_cliente: id })
-    })
-      .then((res) => res.json())
-      .then(() => cargarClientes())
-      .catch((err) => console.error(err));
+    eliminarCliente(id)
+      .then(() => {
+        setMensaje({ tipo: 'success', texto: 'Cliente eliminado correctamente' });
+        cargarClientes();
+      })
+      .catch(() => {
+        setMensaje({ tipo: 'danger', texto: 'Error al eliminar el cliente' });
+      });
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Gestión de Clientes</h2>
-
-      {/* Formulario */}
-      <div className="card my-4 p-3 shadow-sm">
-        <h5>Agregar Nuevo Cliente</h5>
-        <form onSubmit={handleSubmit} className="row g-3 mt-1">
-          <div className="col-md-4">
-            <input
-              type="text"
-              name="nombre_completo"
-              className="form-control"
-              placeholder="Nombre Completo"
-              value={nuevoCliente.nombre_completo}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-3">
-            <input
-              type="text"
-              name="telefono"
-              className="form-control"
-              placeholder="Teléfono"
-              value={nuevoCliente.telefono}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="col-md-3">
-            <input
-              type="text"
-              name="direccion"
-              className="form-control"
-              placeholder="Dirección"
-              value={nuevoCliente.direccion}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="col-md-2">
-            <button type="submit" className="btn btn-primary w-100">Guardar</button>
-          </div>
-        </form>
+    <div className="container-fluid p-4">
+      {/* Encabezado con Botón Modal */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gestión de Clientes</h2>
+        <button
+          className="btn btn-success"
+          data-bs-toggle="modal"
+          data-bs-target="#clienteModal"
+          onClick={() => setClienteSeleccionado(null)}
+        >
+          + Nuevo Cliente
+        </button>
       </div>
 
-      {/* Tabla */}
+      {/* Alerta Bootstrap de notificación */}
+      {mensaje.texto && (
+        <div className={`alert alert-${mensaje.tipo} alert-dismissible fade show mt-3`} role="alert">
+          {mensaje.texto}
+          <button type="button" className="btn-close" onClick={() => setMensaje({ tipo: '', texto: '' })}></button>
+        </div>
+      )}
+
+      {/* Componente Modal reutilizable */}
+      <ClienteModal
+        clienteSeleccionado={clienteSeleccionado}
+        onClienteGuardado={() => {
+          cargarClientes();
+          setClienteSeleccionado(null);
+        }}
+      />
+
+      {/* Tabla de Clientes */}
       {cargando ? (
         <p>Cargando información...</p>
       ) : (
@@ -119,7 +78,8 @@ const Clientes = () => {
           <thead className="table-dark">
             <tr>
               <th>ID</th>
-              <th>Nombre Completo</th>
+              <th>Nombre</th>
+              <th>Email</th>
               <th>Teléfono</th>
               <th>Dirección</th>
               <th>Acciones</th>
@@ -128,15 +88,24 @@ const Clientes = () => {
           <tbody>
             {clientes.length > 0 ? (
               clientes.map((cli) => (
-                <tr key={cli.id_cliente}>
-                  <td>{cli.id_cliente}</td>
-                  <td>{cli.nombre_completo}</td>
-                  <td>{cli.telefono}</td>
+                <tr key={cli.id_cliente || cli.id}>
+                  <td>{cli.id_cliente || cli.id}</td>
+                  <td>{cli.nombre || cli.nombre_completo}</td>
+                  <td>{cli.email || 'N/A'}</td>
+                  <td>{cli.telefono || 'N/A'}</td>
                   <td>{cli.direccion || 'N/A'}</td>
                   <td>
                     <button
+                      className="btn btn-warning btn-sm me-2"
+                      data-bs-toggle="modal"
+                      data-bs-target="#clienteModal"
+                      onClick={() => setClienteSeleccionado(cli)}
+                    >
+                      Editar
+                    </button>
+                    <button
                       className="btn btn-danger btn-sm"
-                      onClick={() => handleEliminar(cli.id_cliente)}
+                      onClick={() => handleEliminar(cli.id_cliente || cli.id)}
                     >
                       Eliminar
                     </button>
@@ -145,7 +114,7 @@ const Clientes = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center">No hay clientes registrados.</td>
+                <td colSpan="6" className="text-center">No hay clientes registrados.</td>
               </tr>
             )}
           </tbody>

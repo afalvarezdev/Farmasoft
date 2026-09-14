@@ -6,17 +6,18 @@ header("Access-Control-Allow-Methods: POST");
 
 require_once "../config/database.php";
 
-// Obtener JSON enviado desde React
 $data = json_decode(file_get_contents("php://input"), true);
 
-// Aceptar 'nombre' o 'nombre_completo'
-$nombre = !empty($data['nombre']) ? $data['nombre'] : (!empty($data['nombre_completo']) ? $data['nombre_completo'] : '');
-$email = $data['email'] ?? null;
-$telefono = $data['telefono'] ?? null;
-$direccion = $data['direccion'] ?? null;
+// Validaciones
+if (empty($data['id']) && empty($data['id_cliente'])) {
+    echo json_encode([
+        "success" => false,
+        "message" => "ID requerido"
+    ]);
+    exit;
+}
 
-// Validaciones backend
-if (empty($nombre)) {
+if (empty($data['nombre']) && empty($data['nombre_completo'])) {
     echo json_encode([
         "success" => false,
         "message" => "El nombre es obligatorio"
@@ -24,20 +25,23 @@ if (empty($nombre)) {
     exit;
 }
 
-if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Email no válido"
-    ]);
-    exit;
-}
+$id = $data['id'] ?? $data['id_cliente'];
+$nombre = $data['nombre'] ?? $data['nombre_completo'];
+$email = $data['email'] ?? null;
+$telefono = $data['telefono'] ?? null;
+$direccion = $data['direccion'] ?? null;
 
 try {
-    $sql = "INSERT INTO clientes (nombre, email, telefono, direccion) 
-            VALUES (:nombre, :email, :telefono, :direccion)";
-    
+    $sql = "UPDATE clientes SET 
+            nombre = :nombre, 
+            email = :email, 
+            telefono = :telefono, 
+            direccion = :direccion 
+            WHERE id = :id OR id_cliente = :id";
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
+        ":id"        => $id,
         ":nombre"    => $nombre,
         ":email"     => $email,
         ":telefono"  => $telefono,
@@ -46,7 +50,7 @@ try {
 
     echo json_encode([
         "success" => true,
-        "message" => "Cliente creado correctamente"
+        "message" => "Cliente actualizado correctamente"
     ]);
 } catch (PDOException $e) {
     echo json_encode([
