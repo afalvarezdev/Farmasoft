@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { obtenerProductos, crearProducto } from '../services/api.js';
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
@@ -12,18 +13,16 @@ const Productos = () => {
     peso: ''
   });
 
-  const cargarProductos = () => {
+  const cargarProductos = async () => {
     setCargando(true);
-    fetch('http://localhost/farmasoft/backend/productos/listar.php')
-      .then((res) => res.json())
-      .then((datos) => {
-        if (Array.isArray(datos)) setProductos(datos);
-        setCargando(false);
-      })
-      .catch((err) => {
-        console.error("Error al cargar productos:", err);
-        setCargando(false);
-      });
+    try {
+      const datos = await obtenerProductos();
+      if (Array.isArray(datos)) setProductos(datos);
+    } catch (err) {
+      console.error("Error al cargar productos:", err);
+    } finally {
+      setCargando(false);
+    }
   };
 
   useEffect(() => {
@@ -37,25 +36,21 @@ const Productos = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    fetch('http://localhost/farmasoft/backend/productos/crear.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(nuevoProducto)
-    })
-      .then((res) => res.json())
-      .then(() => {
-        setNuevoProducto({
-          codigo_producto: '',
-          nombre: '',
-          porcentaje_venta: '',
-          marca: '',
-          peso: ''
-        });
-        cargarProductos();
-      })
-      .catch((err) => console.error("Error al crear producto:", err));
+    try {
+      await crearProducto(nuevoProducto);
+      setNuevoProducto({
+        codigo_producto: '',
+        nombre: '',
+        porcentaje_venta: '',
+        marca: '',
+        peso: ''
+      });
+      cargarProductos();
+    } catch (err) {
+      console.error("Error al crear producto:", err);
+    }
   };
 
   return (
@@ -143,9 +138,9 @@ const Productos = () => {
           <tbody>
             {productos.length > 0 ? (
               productos.map((prod) => (
-                <tr key={prod.Id_productos}>
-                  <td>{prod.Id_productos}</td>
-                  <td>{prod.codigo_producto}</td>
+                <tr key={prod.Id_productos || prod.id_producto}>
+                  <td>{prod.Id_productos || prod.id_producto}</td>
+                  <td>{prod.codigo_producto || prod.codigo}</td>
                   <td>{prod.nombre}</td>
                   <td>{prod.porcentaje_venta}%</td>
                   <td>{prod.marca || 'N/A'}</td>
