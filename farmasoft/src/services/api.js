@@ -124,3 +124,87 @@ export async function eliminarProducto(idProducto) {
     throw error;
   }
 }
+
+// --- PROVEEDORES ---
+export async function obtenerProveedores() {
+  try {
+    const response = await fetch(`${BASE_URL}/proveedores/listar.php`);
+    if (!response.ok) throw new Error("Error al obtener proveedores");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener proveedores:", error);
+    throw error;
+  }
+}
+
+export async function crearProveedor(proveedor) {
+  try {
+    const response = await fetch(`${BASE_URL}/proveedores/crear.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(proveedor),
+    });
+    if (!response.ok) throw new Error("Error al crear proveedor");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al crear proveedor:", error);
+    throw error;
+  }
+}
+
+export async function editarProveedor(proveedor) {
+  try {
+    const response = await fetch(`${BASE_URL}/proveedores/editar.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(proveedor),
+    });
+    if (!response.ok) throw new Error("Error al editar proveedor");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al editar proveedor:", error);
+    throw error;
+  }
+}
+
+export async function eliminarProveedor(idProveedor) {
+  try {
+    const response = await fetch(`${BASE_URL}/proveedores/eliminar.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id_proveedor: idProveedor }),
+    });
+    if (!response.ok) throw new Error("Error al eliminar proveedor");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al eliminar proveedor:", error);
+    throw error;
+  }
+}
+
+// --- COMPRAS ---
+export async function obtenerCompras() {
+  try {
+    const response = await fetch(`${BASE_URL}/compras/listar.php`);
+    if (!response.ok) throw new Error("Error al obtener compras");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener compras:", error);
+    throw error;
+  }
+}
+
+export async function crearCompra(compra) {
+  try {
+    const response = await fetch(`${BASE_URL}/compras/crear.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(compra),
+    });
+    if (!response.ok) throw new Error("Error al registrar la compra");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al registrar la compra:", error);
+    throw error;
+  }
+}

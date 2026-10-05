@@ -54,18 +54,18 @@ const Productos = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Gestión de Productos</h2>
+    <div className="container-fluid px-4 mt-4 fade-in">
+      <h2 className="fw-bold mb-4" style={{ color: '#003366' }}>Gestión de Productos</h2>
 
       {/* Formulario de registro */}
-      <div className="card my-4 p-3 shadow-sm">
-        <h5>Agregar Nuevo Producto</h5>
-        <form onSubmit={handleSubmit} className="row g-3 mt-1">
+      <div className="card card-custom my-4 p-4">
+        <h5 className="fw-semibold mb-3" style={{ color: '#003366' }}>Agregar Nuevo Producto</h5>
+        <form onSubmit={handleSubmit} className="row g-3">
           <div className="col-md-3">
             <input
               type="text"
               name="codigo_producto"
-              className="form-control"
+              className="form-control form-control-custom"
               placeholder="Código"
               value={nuevoProducto.codigo_producto}
               onChange={handleChange}
@@ -76,7 +76,7 @@ const Productos = () => {
             <input
               type="text"
               name="nombre"
-              className="form-control"
+              className="form-control form-control-custom"
               placeholder="Nombre Producto"
               value={nuevoProducto.nombre}
               onChange={handleChange}
@@ -88,7 +88,7 @@ const Productos = () => {
               type="number"
               step="0.01"
               name="porcentaje_venta"
-              className="form-control"
+              className="form-control form-control-custom"
               placeholder="% Venta"
               value={nuevoProducto.porcentaje_venta}
               onChange={handleChange}
@@ -98,7 +98,7 @@ const Productos = () => {
             <input
               type="text"
               name="marca"
-              className="form-control"
+              className="form-control form-control-custom"
               placeholder="Marca"
               value={nuevoProducto.marca}
               onChange={handleChange}
@@ -108,52 +108,60 @@ const Productos = () => {
             <input
               type="text"
               name="peso"
-              className="form-control"
+              className="form-control form-control-custom"
               placeholder="Peso"
               value={nuevoProducto.peso}
               onChange={handleChange}
             />
           </div>
           <div className="col-12 text-end mt-3">
-            <button type="submit" className="btn btn-success">Guardar Producto</button>
+            <button type="submit" className="btn btn-farmasoft">
+              Guardar Producto
+            </button>
           </div>
         </form>
       </div>
 
       {/* Tabla de Productos */}
       {cargando ? (
-        <p>Cargando lista de productos...</p>
+        <div className="text-center py-4">
+          <p className="text-muted fw-semibold">Cargando lista de productos...</p>
+        </div>
       ) : (
-        <table className="table table-bordered table-striped mt-3">
-          <thead className="table-dark">
-            <tr>
-              <th>ID</th>
-              <th>Código</th>
-              <th>Nombre</th>
-              <th>% Venta</th>
-              <th>Marca</th>
-              <th>Peso</th>
-            </tr>
-          </thead>
-          <tbody>
-            {productos.length > 0 ? (
-              productos.map((prod) => (
-                <tr key={prod.Id_productos || prod.id_producto}>
-                  <td>{prod.Id_productos || prod.id_producto}</td>
-                  <td>{prod.codigo_producto || prod.codigo}</td>
-                  <td>{prod.nombre}</td>
-                  <td>{prod.porcentaje_venta}%</td>
-                  <td>{prod.marca || 'N/A'}</td>
-                  <td>{prod.peso || 'N/A'}</td>
-                </tr>
-              ))
-            ) : (
+        <div className="table-responsive">
+          <table className="table table-hover align-middle table-farmasoft mt-2">
+            <thead>
               <tr>
-                <td colSpan="6" className="text-center">No hay productos registrados.</td>
+                <th>ID</th>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>% Venta</th>
+                <th>Marca</th>
+                <th>Peso</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {productos.length > 0 ? (
+                productos.map((prod) => (
+                  <tr key={prod.Id_productos || prod.id_producto}>
+                    <td className="fw-semibold">{prod.Id_productos || prod.id_producto}</td>
+                    <td>{prod.codigo_producto || prod.codigo}</td>
+                    <td className="fw-semibold">{prod.nombre}</td>
+                    <td>{prod.porcentaje_venta}%</td>
+                    <td>{prod.marca || 'N/A'}</td>
+                    <td>{prod.peso || 'N/A'}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="text-center py-4 text-muted">
+                    No hay productos registrados.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

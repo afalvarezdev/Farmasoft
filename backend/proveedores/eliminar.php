@@ -13,22 +13,22 @@ require_once "../config/database.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-if (!empty($data['id_cliente'])) {
-    $id = $data['id_cliente'];
+if (!empty($data['id_proveedor'])) {
+    $id = $data['id_proveedor'];
 
-    $stmt = $conexion->prepare("DELETE FROM clientes WHERE id_cliente = ?");
+    $stmt = $conexion->prepare("DELETE FROM proveedores WHERE id_proveedor = ?");
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-        echo json_encode(["mensaje" => "Cliente eliminado con éxito"]);
+        echo json_encode(["success" => true, "message" => "Proveedor eliminado con éxito"]);
     } else {
         http_response_code(500);
-        echo json_encode(["error" => "Error al eliminar: " . $stmt->error]);
+        echo json_encode(["success" => false, "message" => "Error al eliminar: " . $stmt->error]);
     }
     $stmt->close();
 } else {
     http_response_code(400);
-    echo json_encode(["error" => "ID no proporcionado"]);
+    echo json_encode(["success" => false, "message" => "ID no proporcionado"]);
 }
 
 $conexion->close();

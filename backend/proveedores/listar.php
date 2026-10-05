@@ -11,15 +11,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once "../config/database.php";
 
-$sql = "SELECT id_cliente, nombre_completo, telefono, direccion FROM clientes ORDER BY id_cliente DESC";
+$sql = "SELECT id_proveedor, nombre, direccion, telefono, email FROM proveedores ORDER BY id_proveedor DESC";
 $resultado = $conexion->query($sql);
 
 if ($resultado) {
-    $clientes = array();
+    $proveedores = array();
     while ($fila = $resultado->fetch_assoc()) {
-        $clientes[] = $fila;
+        $proveedores[] = $fila;
     }
-    echo json_encode($clientes, JSON_UNESCAPED_UNICODE);
+    echo json_encode($proveedores, JSON_UNESCAPED_UNICODE);
 } else {
     http_response_code(500);
     echo json_encode(["error" => "Error en la consulta: " . $conexion->error]);

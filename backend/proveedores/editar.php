@@ -13,29 +13,23 @@ require_once "../config/database.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-// Validaciones
-$id = $data['id_cliente'] ?? $data['id'] ?? null;
-$nombre = $data['nombre_completo'] ?? $data['nombre'] ?? null;
-$telefono = $data['telefono'] ?? null;
+$id = $data['id_proveedor'] ?? $data['id'] ?? null;
+$nombre = $data['nombre'] ?? null;
 $direccion = $data['direccion'] ?? null;
+$telefono = $data['telefono'] ?? null;
+$email = $data['email'] ?? null;
 
-if (empty($id)) {
+if (empty($id) || empty($nombre)) {
     http_response_code(400);
-    echo json_encode(["success" => false, "message" => "ID requerido"]);
+    echo json_encode(["success" => false, "message" => "ID y nombre son obligatorios"]);
     exit();
 }
 
-if (empty($nombre)) {
-    http_response_code(400);
-    echo json_encode(["success" => false, "message" => "El nombre es obligatorio"]);
-    exit();
-}
-
-$stmt = $conexion->prepare("UPDATE clientes SET nombre_completo = ?, telefono = ?, direccion = ? WHERE id_cliente = ?");
-$stmt->bind_param("sssi", $nombre, $telefono, $direccion, $id);
+$stmt = $conexion->prepare("UPDATE proveedores SET nombre = ?, direccion = ?, telefono = ?, email = ? WHERE id_proveedor = ?");
+$stmt->bind_param("ssssi", $nombre, $direccion, $telefono, $email, $id);
 
 if ($stmt->execute()) {
-    echo json_encode(["success" => true, "message" => "Cliente actualizado correctamente"]);
+    echo json_encode(["success" => true, "message" => "Proveedor actualizado correctamente"]);
 } else {
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Error al actualizar: " . $stmt->error]);

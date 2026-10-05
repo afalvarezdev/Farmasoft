@@ -4,3 +4,163 @@ body {
   background-color: #f8f9fa;
   font-family: system-ui, -apple-system, sans-serif;
 }
+
+/* Transiciones suaves globales para componentes interactivos */
+button, a, input, select, .nav-link, .card {
+  transition: all 0.25s ease-in-out;
+}
+
+/* Animación de entrada suave para cualquier contenido */
+.fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================
+   PALETA Y ESTILOS CORPORATIVOS FARMASOFT
+   ========================================== */
+
+/* Fondo azul marino para el contenedor del Sidebar */
+.sidebar-bg {
+  background-color: #003366 !important; /* Azul corporativo Farmasoft */
+}
+
+/* Transición e interactividad de los enlaces del menú */
+.sidebar-link {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 20px; /* Bordes redondeados como en la maqueta */
+  color: #ffffff !important;
+  opacity: 0.85;
+  padding: 10px 16px;
+}
+
+/* Efecto Hover: se desplaza a la derecha sutilmente y se aclara */
+.sidebar-link:hover {
+  transform: translateX(8px);
+  background-color: rgba(255, 255, 255, 0.12);
+  opacity: 1;
+}
+
+/* Estado ACTIVO: Verde esmeralda que indica el módulo actual */
+.sidebar-link.active {
+  background-color: #00a859 !important; /* Verde salud/farmacia */
+  color: #ffffff !important;
+  font-weight: 600;
+  opacity: 1;
+  box-shadow: 0 4px 12px rgba(0, 168, 89, 0.35); /* Sombra suave verde */
+}
+
+/* Transiciones y sombras para el Navbar superior */
+/* ==========================================
+   NAVBAR CORPORATIVO FARMASOFT
+   ========================================== */
+
+/* Navbar superior con elevación y fondo blanco pulido */
+.navbar-farmasoft {
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(0, 51, 102, 0.08); /* Sombra azulada sutil */
+}
+
+/* Estilo del título del panel sin cambio de color al pasar el cursor */
+.navbar-title {
+  color: #003366 !important;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  cursor: default;
+}
+
+.navbar-title:hover {
+  color: #003366 !important;
+  text-decoration: none;
+}
+/* Botón "Cerrar sesión" interactivo tipo píldora */
+.btn-logout-custom {
+  border: 1.5px solid #dc3545;
+  color: #dc3545;
+  background-color: transparent;
+  border-radius: 20px;
+  font-weight: 600;
+  padding: 6px 18px;
+  transition: all 0.25s ease-in-out;
+}
+
+.btn-logout-custom:hover {
+  background-color: #dc3545;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+}
+
+.btn-logout-custom:active {
+  transform: translateY(0);
+}
+
+/* ==========================================
+   MÓDULO DE PRODUCTOS Y TABLAS
+   ========================================== */
+
+/* Tarjetas de formulario pulidas */
+.card-custom {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 51, 102, 0.06);
+}
+
+/* Campos de entrada con foco suave */
+.form-control-custom {
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-control-custom:focus {
+  border-color: #00a859;
+  box-shadow: 0 0 0 3px rgba(0, 168, 89, 0.15);
+}
+
+/* Botón principal verde estilo píldora */
+.btn-farmasoft {
+  background-color: #00a859;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: all 0.25s ease-in-out;
+}
+
+.btn-farmasoft:hover {
+  background-color: #008f4c;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 168, 89, 0.3);
+}
+
+/* Tabla corporativa azul */
+.table-farmasoft {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 51, 102, 0.05);
+}
+
+.table-farmasoft thead {
+  background-color: #003366;
+  color: #ffffff;
+}
+
+.table-farmasoft th {
+  font-weight: 600;
+  border: none;
+  padding: 12px 16px;
+}
