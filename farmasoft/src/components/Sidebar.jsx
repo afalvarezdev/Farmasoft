@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 function Sidebar() {
   return (
-    <div className="sidebar-bg text-white vh-100 p-3" style={{ width: "250px" }}>
+    <div className="sidebar-bg text-white vh-100 p-3" style={{ width: "250px", overflowY: "auto" }}>
       <div className="d-flex align-items-center justify-content-center mb-4 pt-2">
         <h4 className="fw-bold tracking-wide m-0 text-white">FARMASOFT</h4>
       </div>
@@ -13,7 +13,7 @@ function Sidebar() {
             className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} 
             to="/productos"
           >
-            Inventario
+            Productos
           </NavLink>
         </li>
         <li className="nav-item">
@@ -49,11 +49,11 @@ function Sidebar() {
           </NavLink>
         </li>
         <li className="nav-item">
-          <NavLink 
+       <NavLink 
             className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} 
-            to="/reportes"
+            to="/informes"
           >
-            Reportes
+            Informes
           </NavLink>
         </li>
         <li className="nav-item">

@@ -208,3 +208,94 @@ export async function crearCompra(compra) {
     throw error;
   }
 }
+
+// --- ROLES ---
+export async function obtenerRoles() {
+  try {
+    const response = await fetch(`${BASE_URL}/roles/listar.php`);
+    if (!response.ok) throw new Error("Error al obtener roles");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener roles:", error);
+    throw error;
+  }
+}
+
+export async function crearRol(rol) {
+  try {
+    const response = await fetch(`${BASE_URL}/roles/crear.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(rol),
+    });
+    if (!response.ok) throw new Error("Error al crear rol");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al crear rol:", error);
+    throw error;
+  }
+}
+
+export async function editarRol(rol) {
+  try {
+    const response = await fetch(`${BASE_URL}/roles/editar.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(rol),
+    });
+    if (!response.ok) throw new Error("Error al editar rol");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al editar rol:", error);
+    throw error;
+  }
+}
+
+export async function eliminarRol(idRol) {
+  try {
+    const response = await fetch(`${BASE_URL}/roles/eliminar.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id_rol: idRol }),
+    });
+    if (!response.ok) throw new Error("Error al eliminar rol");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al eliminar rol:", error);
+    throw error;
+  }
+}
+
+// --- VENTAS ---
+export async function obtenerVentas() {
+  try {
+    const response = await fetch(`${BASE_URL}/ventas/listar.php`);
+    if (!response.ok) throw new Error("Error al obtener ventas");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener ventas:", error);
+    throw error;
+  }
+}
+
+export async function crearVenta(venta) {
+  try {
+    const response = await fetch(`${BASE_URL}/ventas/crear.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(venta),
+    });
+    if (!response.ok) throw new Error("Error al registrar la venta");
+    return await response.json();
+  } catch (error) {
+    console.error("Error al registrar la venta:", error);
+    throw error;
+  }
+}
+
+export const obtenerReporte = async (tipo, params = {}) => {
+  const query = new URLSearchParams({ tipo, ...params }).toString();
+  const res = await fetch(`${API_URL}/reportes/obtener.php?${query}`);
+  const data = await res.json();
+  return data.data || [];
+};

@@ -132,7 +132,7 @@ const Productos = () => {
           <table className="table table-hover align-middle table-farmasoft mt-2">
             <thead>
               <tr>
-                <th>ID</th>
+                {/* <th>ID</th> */}
                 <th>Código</th>
                 <th>Nombre</th>
                 <th>% Venta</th>
@@ -144,7 +144,7 @@ const Productos = () => {
               {productos.length > 0 ? (
                 productos.map((prod) => (
                   <tr key={prod.Id_productos || prod.id_producto}>
-                    <td className="fw-semibold">{prod.Id_productos || prod.id_producto}</td>
+                    {/* <td className="fw-semibold">{prod.Id_productos || prod.id_producto}</td> */}
                     <td>{prod.codigo_producto || prod.codigo}</td>
                     <td className="fw-semibold">{prod.nombre}</td>
                     <td>{prod.porcentaje_venta}%</td>

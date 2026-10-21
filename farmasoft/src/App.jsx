@@ -5,7 +5,9 @@ import Clientes from "./pages/Clientes";
 import Productos from "./pages/Productos";
 import Ventas from "./pages/Ventas";
 import Proveedores from "./pages/Proveedores";
-import Compras from "./pages/Compras"; // <-- 1. Todos los imports arriba
+import Compras from "./pages/Compras";
+import Roles from "./pages/Roles";
+import Reportes from "./pages/Reportes"; // <--- 1. Importamos el componente de reportes/informes
 import DashboardLayout from "./layouts/DashboardLayout";
 
 function App() {
@@ -50,13 +52,28 @@ function App() {
             </DashboardLayout>
           }
         />
-
-        {/* 2. La ruta de compras DENTRO de <Routes> */}
         <Route
           path="/compras"
           element={
             <DashboardLayout>
               <Compras />
+            </DashboardLayout>
+          }
+        />
+        {/* 2. Agregamos la ruta para los Informes */}
+        <Route
+          path="/informes"
+          element={
+            <DashboardLayout>
+              <Reportes />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/roles"
+          element={
+            <DashboardLayout>
+              <Roles />
             </DashboardLayout>
           }
         />
