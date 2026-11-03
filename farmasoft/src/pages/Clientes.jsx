@@ -9,6 +9,8 @@ const Clientes = () => {
   // Estado para el formulario de cliente
   const [formData, setFormData] = useState({
     nombre_completo: '',
+    identificacion: '',
+    correo: '',
     telefono: '',
     direccion: ''
   });
@@ -47,7 +49,7 @@ const Clientes = () => {
     crearCliente(formData)
       .then(() => {
         setMensaje({ tipo: 'success', texto: 'Cliente guardado exitosamente' });
-        setFormData({ nombre_completo: '', telefono: '', direccion: '' });
+        setFormData({ nombre_completo: '', identificacion: '', correo: '', telefono: '', direccion: '' });
         cargarClientes();
       })
       .catch(() => {
@@ -86,7 +88,7 @@ const Clientes = () => {
         <h5 className="fw-bold mb-3" style={{ color: '#003366' }}>Agregar Nuevo Cliente</h5>
         <form onSubmit={handleSubmit}>
           <div className="row g-3 align-items-center">
-            <div className="col-md-4">
+            <div className="col-md-3">
               <input
                 type="text"
                 className="form-control rounded-pill px-3 py-2"
@@ -95,6 +97,26 @@ const Clientes = () => {
                 value={formData.nombre_completo}
                 onChange={handleChange}
                 required
+              />
+            </div>
+            <div className="col-md-3">
+              <input
+                type="text"
+                className="form-control rounded-pill px-3 py-2"
+                placeholder="Identificación (cédula o NIT)"
+                name="identificacion"
+                value={formData.identificacion}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-3">
+              <input
+                type="email"
+                className="form-control rounded-pill px-3 py-2"
+                placeholder="Correo electrónico"
+                name="correo"
+                value={formData.correo}
+                onChange={handleChange}
               />
             </div>
             <div className="col-md-3">
@@ -141,8 +163,10 @@ const Clientes = () => {
             <table className="table align-middle table-hover">
               <thead>
                 <tr style={{ borderBottom: '2px solid #e2e8f0', color: '#003366', fontSize: '0.85rem', textTransform: 'uppercase' }}>
-                  <th className="py-3">IDENTIFICACIÓN</th>
+                    <th className="py-3">ID</th>
+                    <th className="py-3">Identificación</th>
                   <th className="py-3">Nombre</th>
+                    <th className="py-3">Correo electrónico</th>
                   <th className="py-3">Teléfono</th>
                   <th className="py-3">Dirección</th>
                   <th className="py-3 text-end">Acciones</th>
@@ -153,7 +177,9 @@ const Clientes = () => {
                   clientes.map((cli) => (
                     <tr key={cli.id_cliente || cli.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td className="fw-semibold text-secondary">{cli.id_cliente || cli.id}</td>
+                      <td>{cli.identificacion || 'N/A'}</td>
                       <td className="fw-bold" style={{ color: '#0f172a' }}>{cli.nombre_completo || cli.nombre}</td>
+                      <td>{cli.correo || 'N/A'}</td>
                       <td>{cli.telefono || 'N/A'}</td>
                       <td>{cli.direccion || 'N/A'}</td>
                       <td className="text-end">
@@ -168,7 +194,7 @@ const Clientes = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="text-center py-4 text-muted">
+                    <td colSpan="7" className="text-center py-4 text-muted">
                       No hay clientes registrados en el sistema.
                     </td>
                   </tr>

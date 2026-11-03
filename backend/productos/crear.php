@@ -16,13 +16,25 @@ $data = json_decode(file_get_contents("php://input"), true);
 if (!empty($data['codigo_producto']) && !empty($data['nombre'])) {
     $codigo     = $data['codigo_producto'];
     $nombre     = $data['nombre'];
+    $precioCosto = $data['precio_costo'] ?? null;
     $porcentaje = isset($data['porcentaje_venta']) && $data['porcentaje_venta'] !== '' ? $data['porcentaje_venta'] : 0.00;
     $categoria  = isset($data['categorias_id_categoria']) ? $data['categorias_id_categoria'] : 1;
     $marca      = isset($data['marca']) ? $data['marca'] : '';
     $peso       = isset($data['peso']) ? $data['peso'] : '';
 
-    $stmt = $conexion->prepare("INSERT INTO productos (codigo_producto, nombre, porcentaje_venta, categorias_id_categoria, marca, peso) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssdiss", $codigo, $nombre, $porcentaje, $categoria, $marca, $peso);
+    if (!is_numeric($precioCosto) || (float) $precioCosto < 0 || (float) $precioCosto > 999999.99) {
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "error" => "El precio de costo debe ser un número entre 0 y 999999.99"
+        ]);
+        $conexion->close();
+        exit();
+    }
+
+    $precioCosto = (float) $precioCosto;
+    $stmt = $conexion->prepare("INSERT INTO productos (codigo_producto, nombre, precio_costo, porcentaje_venta, categorias_id_categoria, marca, peso) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssddiss", $codigo, $nombre, $precioCosto, $porcentaje, $categoria, $marca, $peso);
 
     if ($stmt->execute()) {
         echo json_encode([

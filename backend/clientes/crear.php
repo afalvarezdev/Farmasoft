@@ -13,23 +13,108 @@ require_once "../config/database.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-// Aceptar 'nombre_completo' o 'nombre'
-$nombre = !empty($data['nombre_completo']) ? $data['nombre_completo'] : (!empty($data['nombre']) ? $data['nombre'] : '');
-$telefono = $data['telefono'] ?? null;
-$direccion = $data['direccion'] ?? null;
-
-// Validación backend
-if (empty($nombre)) {
+if (!is_array($data)) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "El nombre es obligatorio"
+        "message" => "El cuerpo de la solicitud debe ser un JSON válido"
     ]);
     exit();
 }
 
-$stmt = $conexion->prepare("INSERT INTO clientes (nombre_completo, telefono, direccion) VALUES (?, ?, ?)");
-$stmt->bind_param("sss", $nombre, $telefono, $direccion);
+// Aceptar 'nombre_completo' o 'nombre'
+$nombre = $data['nombre_completo'] ?? $data['nombre'] ?? '';
+$identificacion = $data['identificacion'] ?? null;
+$correo = $data['correo'] ?? null;
+$telefono = $data['telefono'] ?? '';
+$direccion = $data['direccion'] ?? null;
+
+if (!is_string($nombre) || trim($nombre) === '' || strlen(trim($nombre)) > 50) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "El nombre es obligatorio y no debe superar 50 caracteres"
+    ]);
+    exit();
+}
+$nombre = trim($nombre);
+
+if ($identificacion !== null && !is_string($identificacion)) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "La identificación no es válida"
+    ]);
+    exit();
+}
+$identificacion = $identificacion !== null ? trim($identificacion) : '';
+if (strlen($identificacion) > 30 || ($identificacion !== '' && !preg_match('/^[\p{L}\p{N} .\/-]+$/u', $identificacion))) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "La identificación no es válida"
+    ]);
+    exit();
+}
+$identificacion = $identificacion !== '' ? $identificacion : null;
+
+if ($correo !== null && !is_string($correo)) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "El correo no es válido"
+    ]);
+    exit();
+}
+$correo = $correo !== null ? trim($correo) : '';
+if (strlen($correo) > 254 || ($correo !== '' && filter_var($correo, FILTER_VALIDATE_EMAIL) === false)) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "El correo no es válido"
+    ]);
+    exit();
+}
+$correo = $correo !== '' ? $correo : null;
+
+if (!is_string($telefono)) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "El teléfono no es válido"
+    ]);
+    exit();
+}
+$telefono = trim($telefono);
+if (strlen($telefono) > 15 || ($telefono !== '' && !preg_match('/^\+?[0-9(). -]+$/D', $telefono))) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "El teléfono no es válido"
+    ]);
+    exit();
+}
+
+if ($direccion !== null && !is_string($direccion)) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "La dirección no es válida"
+    ]);
+    exit();
+}
+$direccion = $direccion !== null ? trim($direccion) : null;
+if ($direccion !== null && strlen($direccion) > 50) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "La dirección no debe superar 50 caracteres"
+    ]);
+    exit();
+}
+
+$stmt = $conexion->prepare("INSERT INTO clientes (nombre_completo, identificacion, correo, telefono, direccion) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param("sssss", $nombre, $identificacion, $correo, $telefono, $direccion);
 
 if ($stmt->execute()) {
     echo json_encode([

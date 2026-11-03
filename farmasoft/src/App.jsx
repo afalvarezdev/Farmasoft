@@ -7,76 +7,101 @@ import Ventas from "./pages/Ventas";
 import Proveedores from "./pages/Proveedores";
 import Compras from "./pages/Compras";
 import Roles from "./pages/Roles";
-import Reportes from "./pages/Reportes"; // <--- 1. Importamos el componente de reportes/informes
+import Reportes from "./pages/Reportes";
 import DashboardLayout from "./layouts/DashboardLayout";
+
+// Componente protector para validar si el usuario ha iniciado sesión
+const RutaPrivada = ({ children }) => {
+  const usuarioLogueado = localStorage.getItem('usuarioLogueado');
+  // Si existe sesión, muestra el contenido (DashboardLayout con sus páginas). Si no, redirige al login.
+  return usuarioLogueado ? children : <Navigate to="/" replace />;
+};
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Al entrar a la raíz, redirige automáticamente a /productos */}
-        <Route path="/" element={<Navigate to="/productos" replace />} />
+        {/* 1. La raíz ahora muestra directamente la pantalla de Login */}
+        <Route path="/" element={<Login />} />
 
-        {/* Ruta opcional de Login */}
+        {/* Ruta alternativa por si llamas /login explícitamente */}
         <Route path="/login" element={<Login />} />
 
+        {/* 2. Todas tus rutas del panel se mantienen exactamente igual, 
+               pero envueltas de forma segura dentro de <RutaPrivada> */}
         <Route
           path="/clientes"
           element={
-            <DashboardLayout>
-              <Clientes />
-            </DashboardLayout>
+            <RutaPrivada>
+              <DashboardLayout>
+                <Clientes />
+              </DashboardLayout>
+            </RutaPrivada>
           }
         />
         <Route
           path="/productos"
           element={
-            <DashboardLayout>
-              <Productos />
-            </DashboardLayout>
+            <RutaPrivada>
+              <DashboardLayout>
+                <Productos />
+              </DashboardLayout>
+            </RutaPrivada>
           }
         />
         <Route
           path="/ventas"
           element={
-            <DashboardLayout>
-              <Ventas />
-            </DashboardLayout>
+            <RutaPrivada>
+              <DashboardLayout>
+                <Ventas />
+              </DashboardLayout>
+            </RutaPrivada>
           }
         />
         <Route
           path="/proveedores"
           element={
-            <DashboardLayout>
-              <Proveedores />
-            </DashboardLayout>
+            <RutaPrivada>
+              <DashboardLayout>
+                <Proveedores />
+              </DashboardLayout>
+            </RutaPrivada>
           }
         />
         <Route
           path="/compras"
           element={
-            <DashboardLayout>
-              <Compras />
-            </DashboardLayout>
+            <RutaPrivada>
+              <DashboardLayout>
+                <Compras />
+              </DashboardLayout>
+            </RutaPrivada>
           }
         />
-        {/* 2. Agregamos la ruta para los Informes */}
         <Route
           path="/informes"
           element={
-            <DashboardLayout>
-              <Reportes />
-            </DashboardLayout>
+            <RutaPrivada>
+              <DashboardLayout>
+                <Reportes />
+              </DashboardLayout>
+            </RutaPrivada>
           }
         />
         <Route
           path="/roles"
           element={
-            <DashboardLayout>
-              <Roles />
-            </DashboardLayout>
+            <RutaPrivada>
+              <DashboardLayout>
+                <Roles />
+              </DashboardLayout>
+            </RutaPrivada>
           }
         />
+
+        {/* Si escriben cualquier otra ruta que no exista, los regresa al Login */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

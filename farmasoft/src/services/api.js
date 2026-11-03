@@ -299,3 +299,18 @@ export const obtenerReporte = async (tipo, params = {}) => {
   const data = await res.json();
   return data.data || [];
 };
+
+// --- loging ---
+export const iniciarSesion = async (credenciales) => {
+  try {
+    const respuesta = await fetch('http://localhost/farmasoft/backend/login/login.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credenciales)
+    });
+    return await respuesta.json();
+  } catch (error) {
+    console.error("Error en login:", error);
+    throw error;
+  }
+};

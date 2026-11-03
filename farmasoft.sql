@@ -53,6 +53,8 @@ CREATE TABLE `categorias` (
 CREATE TABLE `clientes` (
   `id_cliente` int(11) NOT NULL,
   `nombre_completo` varchar(50) NOT NULL,
+  `identificacion` varchar(30) DEFAULT NULL,
+  `correo` varchar(254) DEFAULT NULL,
   `telefono` varchar(15) NOT NULL,
   `direccion` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
@@ -120,6 +122,7 @@ CREATE TABLE `productos` (
   `id_productos` int(11) NOT NULL,
   `codigo_producto` varchar(45) NOT NULL,
   `nombre` varchar(45) NOT NULL,
+  `precio_costo` decimal(8,2) UNSIGNED NOT NULL,
   `porcentaje_venta` decimal(8,2) NOT NULL,
   `categorias_id_categoria` int(11) NOT NULL,
   `marca` varchar(45) NOT NULL,

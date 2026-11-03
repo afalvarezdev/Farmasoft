@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once "../config/database.php";
 
-$sql = "SELECT id_cliente, nombre_completo, telefono, direccion FROM clientes ORDER BY id_cliente DESC";
+$sql = "SELECT id_cliente, identificacion, nombre_completo, correo, telefono, direccion FROM clientes ORDER BY id_cliente DESC";
 $resultado = $conexion->query($sql);
 
 if ($resultado) {
