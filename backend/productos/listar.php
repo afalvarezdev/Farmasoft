@@ -7,7 +7,7 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once "../config/database.php";
 
 // Corregido a 'id_productos' en minúscula para que coincida con la base de datos
-$sql = "SELECT id_productos, codigo_producto, nombre, porcentaje_venta, marca, peso FROM productos ORDER BY id_productos DESC";
+$sql = "SELECT id_productos, codigo_producto, nombre, precio_costo, porcentaje_venta, marca, peso FROM productos ORDER BY id_productos DESC";
 $resultado = $conexion->query($sql);
 
 $productos = array();

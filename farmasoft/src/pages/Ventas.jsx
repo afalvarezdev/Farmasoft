@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { obtenerVentas, crearVenta, obtenerClientes, obtenerProductos } from '../services/api';
 
+const formatoCOP = new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  maximumFractionDigits: 2
+});
+
 const Ventas = () => {
   const [ventas, setVentas] = useState([]);
   const [clientes, setClientes] = useState([]);
@@ -19,6 +25,8 @@ const Ventas = () => {
     cantidad: 1,
     precio_venta: ''
   });
+  const [busquedaProducto, setBusquedaProducto] = useState('');
+  const [mostrarResultadosProducto, setMostrarResultadosProducto] = useState(false);
 
   // Lista de productos seleccionados
   const [detallesVenta, setDetallesVenta] = useState([]);
@@ -57,15 +65,24 @@ const Ventas = () => {
     cargarDatos();
   }, []);
 
-  const handleSelectProducto = (e) => {
-    const idProd = e.target.value;
-    const productoSeleccionado = productos.find(p => String(p.id_productos) === String(idProd));
+  const productosFiltrados = productos.filter((producto) =>
+    `${producto.nombre} ${producto.codigo_producto || ''}`
+      .toLowerCase()
+      .includes(busquedaProducto.trim().toLowerCase())
+  );
+
+  const handleSelectProducto = (productoSeleccionado) => {
+    const precioCosto = Number(productoSeleccionado?.precio_costo);
+    const porcentajeVenta = Number(productoSeleccionado?.porcentaje_venta);
+    const precioVenta = precioCosto + (precioCosto * porcentajeVenta / 100);
 
     setItemTemporal({
       ...itemTemporal,
-      id_producto: idProd ? Number(idProd) : '',
-      precio_venta: productoSeleccionado ? (productoSeleccionado.precio || productoSeleccionado.porcentaje_venta || '') : ''
+      id_producto: productoSeleccionado ? Number(productoSeleccionado.id_productos) : '',
+      precio_venta: productoSeleccionado && Number.isFinite(precioVenta) ? String(precioVenta) : ''
     });
+    setBusquedaProducto(productoSeleccionado?.nombre || '');
+    setMostrarResultadosProducto(false);
   };
 
   const handleAgregarProducto = (e) => {
@@ -87,6 +104,8 @@ const Ventas = () => {
 
     setDetallesVenta([...detallesVenta, nuevoDetalle]);
     setItemTemporal({ id_producto: '', cantidad: 1, precio_venta: '' });
+    setBusquedaProducto('');
+    setMostrarResultadosProducto(false);
     setMensaje({ tipo: '', texto: '' });
   };
 
@@ -159,21 +178,6 @@ const Ventas = () => {
               ))}
             </select>
           </div>
-          <div className="col-md-4">
-            <label className="form-label fw-semibold">Tipo de Pago</label>
-            <select className="form-select rounded-pill" value={tipoPago} onChange={(e) => setTipoPago(e.target.value)}>
-              <option value="Contado">Contado</option>
-              <option value="Crédito">Crédito</option>
-            </select>
-          </div>
-          <div className="col-md-4">
-            <label className="form-label fw-semibold">Medio de Pago</label>
-            <select className="form-select rounded-pill" value={medioPago} onChange={(e) => setMedioPago(e.target.value)}>
-              <option value="Efectivo">Efectivo</option>
-              <option value="Tarjeta">Tarjeta</option>
-              <option value="Transferencia">Transferencia</option>
-            </select>
-          </div>
         </div>
 
         {/* Añadir Producto al Carrito */}
@@ -181,18 +185,48 @@ const Ventas = () => {
           <h6 className="fw-bold mb-3" style={{ color: '#003366' }}>Agregar Productos</h6>
           <div className="row g-2 align-items-center">
             <div className="col-md-5">
-              <select 
-                className="form-select rounded-pill" 
-                value={itemTemporal.id_producto} 
-                onChange={handleSelectProducto}
-              >
-                <option value="">Seleccionar Producto...</option>
-                {productos.map(prod => (
-                  <option key={prod.id_productos} value={prod.id_productos}>
-                    {prod.nombre}
-                  </option>
-                ))}
-              </select>
+              <div className="position-relative">
+                <input
+                  type="search"
+                  className="form-control rounded-pill"
+                  placeholder="Buscar producto..."
+                  value={busquedaProducto}
+                  autoComplete="off"
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-expanded={mostrarResultadosProducto}
+                  onFocus={() => setMostrarResultadosProducto(true)}
+                  onBlur={() => setMostrarResultadosProducto(false)}
+                  onChange={(e) => {
+                    setBusquedaProducto(e.target.value);
+                    setMostrarResultadosProducto(true);
+                    setItemTemporal({ ...itemTemporal, id_producto: '', precio_venta: '' });
+                  }}
+                />
+                {mostrarResultadosProducto && (
+                  <div
+                    className="dropdown-menu show w-100"
+                    role="listbox"
+                    style={{ position: 'absolute', maxHeight: '240px', overflowY: 'auto', zIndex: 1050 }}
+                  >
+                    {productosFiltrados.length > 0 ? productosFiltrados.map(prod => (
+                      <button
+                        key={prod.id_productos}
+                        type="button"
+                        className="dropdown-item"
+                        role="option"
+                        aria-selected={String(itemTemporal.id_producto) === String(prod.id_productos)}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => handleSelectProducto(prod)}
+                      >
+                        {prod.nombre}
+                      </button>
+                    )) : (
+                      <span className="dropdown-item-text text-muted">No se encontraron productos</span>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="col-md-2">
               <input 
@@ -239,8 +273,8 @@ const Ventas = () => {
                   <tr key={idx}>
                     <td>{item.nombre_producto}</td>
                     <td>{item.cantidad}</td>
-                    <td>${parseFloat(item.precio_venta).toLocaleString()}</td>
-                    <td className="fw-bold">${item.subtotal.toLocaleString()}</td>
+                    <td>{formatoCOP.format(Number(item.precio_venta))}</td>
+                    <td className="fw-bold">{formatoCOP.format(item.subtotal)}</td>
                     <td className="text-end">
                       <button className="btn btn-outline-danger btn-sm rounded-pill px-3" onClick={() => handleEliminarItem(idx)}>Quitar</button>
                     </td>
@@ -248,13 +282,35 @@ const Ventas = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
 
+        <div className="row g-3 mb-4">
+          <div className="col-md-4">
+            <label className="form-label fw-semibold">Tipo de Pago</label>
+            <select className="form-select rounded-pill" value={tipoPago} onChange={(e) => setTipoPago(e.target.value)}>
+              <option value="Contado">Contado</option>
+              <option value="Crédito">Crédito</option>
+            </select>
+          </div>
+          <div className="col-md-4">
+            <label className="form-label fw-semibold">Medio de Pago</label>
+            <select className="form-select rounded-pill" value={medioPago} onChange={(e) => setMedioPago(e.target.value)}>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Tarjeta">Tarjeta</option>
+              <option value="Transferencia">Transferencia</option>
+            </select>
+          </div>
+        </div>
+
+        {detallesVenta.length > 0 && (
+          <>
             {/* Totales y Botón de Guardar */}
             <div className="row mt-4 pt-3 border-top align-items-center">
               <div className="col-md-6">
-                <p className="mb-1 text-muted">Subtotal: <span className="fw-bold text-dark">${calcularSubtotal().toLocaleString()}</span></p>
-                <p className="mb-1 text-muted">Impuesto (19%): <span className="fw-bold text-dark">${calcularImpuesto().toLocaleString()}</span></p>
-                <h4 className="fw-bold mt-2" style={{ color: '#003366' }}>Total a Pagar: ${calcularTotal().toLocaleString()}</h4>
+                <p className="mb-1 text-muted">Subtotal: <span className="fw-bold text-dark">{formatoCOP.format(calcularSubtotal())}</span></p>
+                <p className="mb-1 text-muted">Impuesto (19%): <span className="fw-bold text-dark">{formatoCOP.format(calcularImpuesto())}</span></p>
+                <h4 className="fw-bold mt-2" style={{ color: '#003366' }}>Total a Pagar: {formatoCOP.format(calcularTotal())}</h4>
               </div>
               <div className="col-md-6 text-end">
                 <button className="btn px-5 py-2" style={{ backgroundColor: '#003366', color: '#fff', borderRadius: '25px', fontWeight: '600' }} onClick={handleGuardarVenta}>
@@ -262,7 +318,7 @@ const Ventas = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
 
@@ -293,7 +349,7 @@ const Ventas = () => {
                       <td className="fw-bold">{v.nombre_cliente || 'Cliente General / Ocasional'}</td>
                       <td>{v.tipo_pago}</td>
                       <td>{v.medio_pago}</td>
-                      <td className="fw-bold text-success">${parseFloat(v.total).toLocaleString()}</td>
+                      <td className="fw-bold text-success">{formatoCOP.format(Number(v.total))}</td>
                     </tr>
                   ))
                 ) : (

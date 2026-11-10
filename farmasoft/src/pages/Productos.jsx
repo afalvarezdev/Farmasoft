@@ -106,13 +106,13 @@ const Productos = () => {
             />
           </div>
           <div className="col-md-3">
-            <label className="form-label" htmlFor="precio-costo">Precio de Costo</label>
+            <label className="form-label" htmlFor="precio-costo">Precio de Costo unidad</label>
             <input
               type="number"
               id="precio-costo"
               name="precio_costo"
               className="form-control form-control-custom"
-              placeholder="Precio de Costo"
+              placeholder="Precio de Costo unidad"
               min="0"
               max="999999.99"
               step="0.01"

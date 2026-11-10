@@ -204,8 +204,10 @@ const Compras = () => {
                   <tr key={idx}>
                     <td>{item.nombre_producto}</td>
                     <td>{item.cantidad}</td>
-                    <td>${parseFloat(item.precio_costo).toLocaleString()}</td>
-                    <td className="fw-bold">${item.subtotal.toLocaleString()}</td>
+                    <td>${parseFloat(item.precio_costo)}</td>
+                    <td className="fw-bold">${item.subtotal}
+
+                    </td>
                     <td>{item.fecha_caducidad || 'N/A'}</td>
                     <td className="text-end">
                       <button className="btn btn-outline-danger btn-sm rounded-pill px-3" onClick={() => handleEliminarItem(idx)}>Quitar</button>
@@ -215,7 +217,7 @@ const Compras = () => {
               </tbody>
             </table>
             <div className="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-              <h5 className="fw-bold mb-0" style={{ color: '#003366' }}>Total Compra: ${calcularTotal().toLocaleString()}</h5>
+              <h5 className="fw-bold mb-0" style={{ color: '#003366' }}>Total Compra: ${calcularTotal()}</h5>
               <button className="btn px-4 py-2" style={{ backgroundColor: '#003366', color: '#fff', borderRadius: '25px', fontWeight: '600' }} onClick={handleGuardarCompra}>
                 Guardar Compra
               </button>
@@ -249,7 +251,7 @@ const Compras = () => {
                       <td>{c.fecha_compra}</td>
                       <td className="fw-bold">{c.nombre_proveedor}</td>
                       <td>{c.metodo_pago}</td>
-                      <td className="fw-bold text-success">${parseFloat(c.total_compra).toLocaleString()}</td>
+                      <td className="fw-bold text-success">${parseFloat(c.total_compra)}</td>
                     </tr>
                   ))
                 ) : (
